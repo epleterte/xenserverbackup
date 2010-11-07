@@ -3,8 +3,9 @@
 # Christian Bryn 2010 <chr.bryn@gmail.com>
 
 ## functions
-# get, parse and return 'associative' array in format <vm label>:<vm uuid>
 function vmlist {
+    # get, parse and return 'associative' array in format <vm label>:<vm uuid>
+    # params: none
     local key=0
     local index=0
     local IFS="
@@ -45,7 +46,7 @@ function backup_vm {
     label="${host%%:*}"
     # snapshot the mofo
     snap=$( xe vm-snapshot vm="${host##*:}" new-name-label=backup_$( date "+%Y-%m-%d" )  )
-    xe template-param-set is-a-template=false uuid="${snap}"
+    xe template-param-set is-a-template=false uuid="${snap}" > /dev/null
     local backup_file_path="${backup_dir}/$( date "+%V" )/${label}"
     if [ ! -d "${backup_file_path}"  ]; then
         mkdir -p "${backup_file_path}" || { p_err "Could not create directory ${backup_file_path}!"; exit 1; }
@@ -68,6 +69,8 @@ function read_config {
 }
 
 function p_err {
+    # print errors
+    # params: <string>
     local string="${@}"
     if [ "${logging}" == "true" ]; then
         printf "$[ error ] %s - %s\n" "$(date)" "${string}" >> ${logfile}
@@ -77,6 +80,8 @@ function p_err {
 }
 
 function p_info {
+    # print info
+    # params: <string>
     local string="${@}"
     if [ "${logging}" == "true" ]; then
         printf "[ info ] %s -  %s\n" "$(date)" "${string}" >> ${logfile}
@@ -123,7 +128,7 @@ if [ -t 1 ]; then
     exec 2>&3
 fi
 
-## init
+## init defaults
 backup_all_vms="false"
 backup_dir=""
 backup_control_domain="false"
