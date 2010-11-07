@@ -1,0 +1,9 @@
+== TODO ==
+
+* Clean crud
+* Should 'backup control domain' be an available option at all? Untested and uninvestigated by me, but other xenserver backup scripts on ze web implements skipping the control domain itself.
+* The read-config file and(/or) parse-commandline routine needs some sanity checking.
+* Check possibility of estimating backup disk usage, report/error out if not enough space.
+* Include backup size for each VM in log.
+* Extend backup report/log to include total running time and total disk space at end of run.
+* ...
