@@ -52,7 +52,7 @@ function backup_vm {
         mkdir -p "${backup_file_path}" || { p_err "Could not create directory ${backup_file_path}!"; exit 1; }
     fi
     # export snapshot
-    xe vm-export vm="${snap}" filename="${backup_file_path}/${label}-$( date "+%Y-%m-%d" ).xva" > /dev/null
+    xe vm-export vm="${snap}" filename="${backup_file_path}/${label}-$( date "+%Y-%m-%d_%H.%M" ).xva" > /dev/null
     xe vm-uninstall uuid="${snap}" force=true > /dev/null
 }
 
@@ -224,10 +224,10 @@ which xe >/dev/null 2>&1 || { p_err "xe not in path!"; exit 1; }
 [ "${backup_dir}" == "" ] && { p_err "No backup destination path given."; exit 1; }
 [ ! -d "${backup_dir}"  ] && { p_err "Backup path ${backup_dir} is not a directory"; exit 1; }
 
-# 
 [ "${logging}" == "true" ] && exec >>${logfile} 2>>${logfile}
+
 ## main
-# this one should overrule config file parameter
+# this one should override config file parameter
 [ "${@:-}" != "" ] && vm_names="${@}"
 
 vm_list=$(vmlist)
