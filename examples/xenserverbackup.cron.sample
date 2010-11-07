@@ -1,0 +1,3 @@
+MAILTO=sysadmin@reynholm-industri.es
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+0 1 * * * root /usr/local/sbin/xenserverbackup.sh
