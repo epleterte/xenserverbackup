@@ -103,7 +103,7 @@ Usage: ${0} [-a|-b <backup dir>|-c|-C <config file>|-d|-e "<exception list>"|-h|
     -e      Space separated list of VMs that should not be backed up.
     -l      Enable/disable logging with 'true' or 'false'.
     -m      Mount command to run previous to running the backup.
-    -u      Specify VMs to back up via uuid (not implemented)
+    -u      Specify VMs to back up via uuid.
     -w      Write parameters -a.-b,-e,-m as specified on the command line to 
             default config file path and exit. 
 
