@@ -1,0 +1,8 @@
+backup_all_vms='true'
+backup_dir='/mnt/backup/'
+exception_list='unimportant.example.com yetanotherclusternode.example.com backup_2010-09-20'
+logfile='/root/.xenserver-backup.log'
+logging='true'
+mount_command='mount /mnt/backup'
+uuids=''
+vm_names=''
