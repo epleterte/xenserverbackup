@@ -2,3 +2,26 @@
 
 XenServer Backup script utilizing snapshots (via exports).
 
+Back up Xenserver instances using snapshots. Specify which instances to back up 
+with -a for all, -u for uuids or by passing VM names directly.
+Usage: ./xenserverbackup.sh [-a|-b <backup dir>|-c|-C <config file>|-d|-e "<exception list>"|-h|-m "<mount command>"|-u "<uuid> [...<uuid>]"|-w] [<vm-name> [...<vm-name>]]
+    -a      Backup all VMs except control domain
+    -b      Specify output directory
+    -c      Backup control domain
+    -C      Specify config file (defaults to ~/.xenserver-backup.cfg)
+    -d      Dry run.
+    -e      Space separated list of VMs that should not be backed up.
+    -l      Enable/disable logging with 'true' or 'false'.
+    -m      Mount command to run previous to running the backup.
+    -u      Specify VMs to back up via uuid (not implemented)
+    -w      Write parameters -a.-b,-e,-m as specified on the command line to 
+            default config file path and exit. 
+
+Examples:
+    ./xenserverbackup.sh <vm-name>
+    ./xenserverbackup.sh -b /srv/backup/ <vm-name> <vm-name>
+    ./xenserverbackup.sh -b /mnt/backup/ -a -d
+    ./xenserverbackup.sh -a -b /mnt/backup -e "<vm-name> <vm-name>"
+    ./xenserverbackup.sh -a -b /mnt/backup -e "<vm-name> <vm-name>" -m 'mount -t nfs <ip>:/share /mnt/backup'
+    ./xenserverbackup.sh -a -b /mnt/backup -e "<vm-name> <vm-name>" -m 'mount -t nfs <ip>:/share /mnt/backup' -w
+
