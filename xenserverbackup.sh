@@ -1,5 +1,4 @@
 #!/bin/bash -ue
-#
 #  Xenserver backup script using snapshots (via exports).
 #  Copyright (C) 2010  Christian Bryn <chr.bryn@gmail.com>
 #
@@ -20,6 +19,7 @@
 ## functions
 function vmlist {
     # get, parse and return 'associative' array in format <vm label>:<vm uuid>
+    # array returned uses '|' as IFS in order to allow spaces in VM names.
     # params: none
     local key=0
     local index=0
@@ -43,7 +43,7 @@ function vmlist {
 
                     uuid=`expr "$line" : '.*: \(.*\)$'`
                     label=`expr "${vm_list_array[key+1]}" : '.*: \(.*\)$'`
-                    vms[index]="${label}:${uuid}"
+                    vms[index]="${label}:${uuid}|"
 
                     let "index = $index+1"
             fi
@@ -261,6 +261,7 @@ p_info "---------- Initiating backup run... ----------"
 [ "${dry_run}" == "true" ] && p_info "Performing dry run, will not attempt to actually backup any VMs"
 [ -t 1 -a "${logging}" == "true" ] && { logging="false"; p_info "Logging on, check log file $logfile for status."; logging="true"; }
 # backup vms by name or uuid if not in the exception list
+IFS="|"
 for vm in ${vm_list[@]}; do
     ## vm=hostname:uuid
     if [ "${vm_names:-}" != "" ]; then
@@ -275,4 +276,5 @@ for vm in ${vm_list[@]}; do
     p_info "Backing up ${vm%%:*} with uuid ${vm##*:}"
     [ "${dry_run}" == "false" ] && backup_vm "${vm}"
 done
+unset IFS
 p_info "Backup run ended."
