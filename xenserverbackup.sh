@@ -23,7 +23,7 @@ function vmlist {
     # params: none
     local vms=$(
     awk '
-function leftxeval(str) { 
+function getxeval(str) { 
     sub(/[^:]*:[ \t]+/, "", str)
     return str
 }   
@@ -37,9 +37,9 @@ BEGIN {
 }   
 {   
     # we are relying on structural data...
-    uuid=leftxeval($1)
-    vmname=leftxeval($2)
-    state=leftxeval($3)
+    uuid=getxeval($1)
+    vmname=getxeval($2)
+    state=getxeval($3)
     printf vmname":"uuid"|"
 }' <( xe vm-list is-a-snapshot=false is-control-domain=false )
     )
