@@ -63,7 +63,7 @@ function backup_vm {
     snap=$( xe vm-snapshot vm="${host##*:}" new-name-label=backup_$( date "+%s" )  )
     trap "xe vm-uninstall uuid="${snap}" force=true > /dev/null" EXIT
     xe template-param-set is-a-template=false uuid="${snap}" > /dev/null
-    local backup_file_path="${backup_dir}/$( date "+%V" )/${label/ /}"
+    local backup_file_path="${backup_dir}/$( date "+%V" )/${label%% }"
     if [ ! -d "${backup_file_path}"  ]; then
         mkdir -p "${backup_file_path}" || { p_err "Could not create directory ${backup_file_path}!"; exit 1; }
     fi
