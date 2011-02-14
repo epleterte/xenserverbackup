@@ -28,9 +28,9 @@ function vmlist {
 
     if [ "$backup_control_domain" == "true" ];
     then
-        local vm_list=$( xe vm-list )
+        local vm_list=$( xe vm-list is-a-snapshot=false)
     else
-        local vm_list=$( xe vm-list is-control-domain=false )
+        local vm_list=$( xe vm-list is-a-snapshot=false is-control-domain=false )
     fi
 
     local vm_list_array=(${vm_list})
