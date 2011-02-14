@@ -26,12 +26,8 @@ function vmlist {
     local IFS="
 "
 
-    if [ "$backup_control_domain" == "true" ];
-    then
-        local vm_list=$( xe vm-list is-a-snapshot=false)
-    else
-        local vm_list=$( xe vm-list is-a-snapshot=false is-control-domain=false )
-    fi
+    local vm_list=$( xe vm-list is-a-snapshot=false)
+    [ "$backup_control_domain" == "true" ] && local vm_list=$( xe vm-list is-a-snapshot=false is-control-domain=false )
 
     local vm_list_array=(${vm_list})
     local vms=()
@@ -258,6 +254,8 @@ if [ ! "${mount_command}" == "" -a "${dry_run}" == "false" ]; then
     mount | grep -q "${backup_dir}" || { p_err "Backup dir ${backup_dir} is not mounted, exiting."; exit 1; }
 fi
 
+start_time="$( date '+%s' )"
+
 p_info "---------- Initiating backup run... ----------"
 [ "${dry_run}" == "true" ] && p_info "Performing dry run, will not attempt to actually backup any VMs"
 [ -t 1 -a "${logging}" == "true" ] && { logging="false"; p_info "Logging on, check log file $logfile for status."; logging="true"; }
@@ -278,4 +276,4 @@ for vm in ${vm_list[@]}; do
     [ "${dry_run}" == "false" ] && backup_vm "${vm}"
 done
 unset IFS
-p_info "Backup run ended."
+p_info "Backup run ended taking $(($(date "+%s")-${start_time})) seconds."
