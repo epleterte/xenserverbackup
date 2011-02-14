@@ -21,33 +21,29 @@ function vmlist {
     # get, parse and return 'associative' array in format <vm label>:<vm uuid>
     # array returned uses '|' as IFS in order to allow spaces in VM names.
     # params: none
-    local key=0
-    local index=0
-    local IFS="
-"
-
-    local vm_list=$( xe vm-list is-a-snapshot=false)
-    [ "$backup_control_domain" == "true" ] && local vm_list=$( xe vm-list is-a-snapshot=false is-control-domain=false )
-
-    local vm_list_array=(${vm_list})
-    local vms=()
-
-    # this looks a lot like Andy's script - thanks! :-))
-    for line in ${vm_list_array[@]};
-    do
-            if [ "${line:0:4}" = "uuid" ]; then
-
-                    uuid=`expr "$line" : '.*: \(.*\)$'`
-                    label=`expr "${vm_list_array[key+1]}" : '.*: \(.*\)$'`
-                    vms[index]="${label}:${uuid}|"
-
-                    let "index = $index+1"
-            fi
-
-            let "key = $key+1"
-    done
-    unset IFS
-    echo "${vms[@]}"
+    local vms=$(
+    awk '
+function leftxeval(str) { 
+    sub(/[^:]*:[ \t]+/, "", str)
+    return str
+}   
+       
+BEGIN {
+    FS="\n"
+    RS=""
+    #OFS=", "
+    #ORS="\n\n"
+       
+}   
+{   
+    # we are relying on structural data...
+    uuid=leftxeval($1)
+    vmname=leftxeval($2)
+    state=leftxeval($3)
+    printf vmname":"uuid"|"
+}' <( xe vm-list is-a-snapshot=false is-control-domain=false )
+    )
+    echo -en "${vms}"
 }
 
 function backup_vm {
@@ -107,9 +103,8 @@ function print_usage {
 Back up Xenserver instances using snapshots. Specify which instances to back up 
 with -a for all, -u for uuids or by passing VM names directly.
 Usage: ${0} [-a|-b <backup dir>|-c|-C <config file>|-d|-e "<exception list>"|-h|-m "<mount command>"|-u "<uuid> [...<uuid>]"|-w] [<vm-name> [...<vm-name>]]
-    -a      Backup all VMs except control domain
+    -a      Backup all VMs.
     -b      Specify output directory
-    -c      Backup control domain
     -C      Specify config file (defaults to ~/.xenserver-backup.cfg)
     -d      Dry run.
     -e      Space separated list of VMs that should not be backed up.
@@ -143,7 +138,6 @@ fi
 ## init defaults
 backup_all_vms="false"
 backup_dir=""
-backup_control_domain="false"
 config_file=~/.xenserver-backup.cfg
 dry_run="false"
 exception_list=""
@@ -157,7 +151,7 @@ writeconfig="false"
 # override defaults, then let command line override the config file..
 read_config
 
-while getopts hCab:cde:l:L:m:nu:w o
+while getopts hCab:de:l:L:m:nu:w o
 do
     case $o in
         h)
@@ -172,9 +166,6 @@ do
             ;;
         b)
             backup_dir="${OPTARG}"
-            ;;
-        c)
-            backup_control_domain="true"
             ;;
         d)
             dry_run="true"
