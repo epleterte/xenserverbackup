@@ -235,7 +235,7 @@ which xe >/dev/null 2>&1 || { p_err "xe not in path!"; exit 1; }
 
 vm_list=$(vmlist)
 
-for vm in ${vm_names:-} ${exception_list} ${uuids:-}; do
+for vm in ${vm_names:-} ${uuids:-}; do
     [[ ! "${vm_list[@]}" =~ ${vm} ]] && { p_err "VM/UUID ${vm} does not exist!"; exit 1; }
 done
 
