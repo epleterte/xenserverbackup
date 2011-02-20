@@ -132,7 +132,7 @@ if [ -t 1 ]; then
     green=$( tput setf 2 ) || true
     yellow=$( tput setf 6 ) || true
     t_reset=$( tput sgr0 ) || true
-    exec 2>&3
+    exec 2>&3; exec 3>&-
 fi
 
 ## init defaults
