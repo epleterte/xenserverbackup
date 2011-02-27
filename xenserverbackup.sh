@@ -81,7 +81,7 @@ function p_err {
     # params: <string>
     local string="${@}"
     if [ "${logging}" == "true" ]; then
-        printf "$[ error ] %s - %s\n" "$(date)" "${string}" >> ${logfile}
+        printf "[ error ] %s - %s\n" "$(date)" "${string}" >> ${logfile}
     else
         printf "${b:-}${red:-}[ error ]${t_reset:-} %s - %s\n" "$(date)" "${string}"
     fi
@@ -138,7 +138,7 @@ fi
 ## init defaults
 backup_all_vms="false"
 backup_dir=""
-config_file=~/.xenserver-backup.cfg
+config_file=/etc/xenserver-backup.cfg
 dry_run="false"
 exception_list=""
 logfile=/var/log/xenserver-backup.log
