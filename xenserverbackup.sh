@@ -231,7 +231,7 @@ which xe >/dev/null 2>&1 || { p_err "xe not in path!"; exit 1; }
 
 ## main
 # this one should override config file parameter
-[ "${@:-}" != "" ] && vm_names="${@}"
+[[ "${@:-}" != "" ]] && vm_names="${@}"
 
 vm_list=$(vmlist)
 
