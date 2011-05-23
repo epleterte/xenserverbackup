@@ -230,8 +230,10 @@ which xe >/dev/null 2>&1 || { p_err "xe not in path!"; exit 1; }
 [ "${logging}" == "true" ] && exec >>${logfile} 2>>${logfile}
 
 ## main
-# this one should override config file parameter
-[[ "${@:-}" != "" ]] && vm_names="${@}"
+# this one should override config file parameter and exception list.
+[[ "${@:-}" != "" ]] && { vm_names="${@}"; exception_list=""; }
+# # hmm, this will only work if the exception list and the passed vm name match.. fixed above instead resetting exception_list.
+# vm_names=array("${vm_names/${exception_list}/}")
 
 vm_list=$(vmlist)
 
