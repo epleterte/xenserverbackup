@@ -52,15 +52,15 @@ function backup_vm {
     host="${1}"
     label="${host%%:*}"
     # snapshot the mofo
-    snap=$( xe vm-snapshot vm="${host##*:}" new-name-label=backup_$( date "+%s" )  )
+    snap=$( xe vm-snapshot vm="${host##*:}" new-name-label=backup_$( date "+%s" )  ) || return 1;
     trap "xe vm-uninstall uuid="${snap}" force=true > /dev/null" EXIT
-    xe template-param-set is-a-template=false uuid="${snap}" > /dev/null
+    xe template-param-set is-a-template=false uuid="${snap}" > /dev/null || return 1;
     local backup_file_path="${backup_dir}/$( date "+%V" )/${label%% }"
     if [ ! -d "${backup_file_path}"  ]; then
         mkdir -p "${backup_file_path}" || { p_err "Could not create directory ${backup_file_path}!"; exit 1; }
     fi
-    # export snapshot
-    xe vm-export vm="${snap}" filename="${backup_file_path}/${label}-$( date "+%Y-%m-%d_%H.%M" ).xva" > /dev/null
+    # export snapshot.
+    xe vm-export vm="${snap}" filename="${backup_file_path}/${label}-$( date "+%Y-%m-%d_%H.%M" ).xva" > /dev/null || return 1;
     xe vm-uninstall uuid="${snap}" force=true > /dev/null
 }
 
@@ -266,7 +266,7 @@ for vm in ${vm_list[@]}; do
     [[ "${exception_list}" =~ ${vm##*:} ]] && continue
     
     p_info "Backing up ${vm%%:*} with uuid ${vm##*:}"
-    [ "${dry_run}" == "false" ] && backup_vm "${vm}"
+    [ "${dry_run}" == "false" ] && backup_vm "${vm}" || continue
 done
 unset IFS
 p_info "Backup run ended taking $(($(date "+%s")-${start_time})) seconds."
