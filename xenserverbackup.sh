@@ -266,7 +266,9 @@ for vm in ${vm_list[@]}; do
     [[ "${exception_list}" =~ ${vm##*:} ]] && continue
     
     p_info "Backing up ${vm%%:*} with uuid ${vm##*:}"
+    vm_start_time="$( date '+%s' )"
     [ "${dry_run}" == "false" ] && backup_vm "${vm}" || continue
+    p_info "Backup of ${vm%%:*} with uuid ${vm##*:} ended successfully taking $(($(date "+%s")-${vm_start_time})) seconds."
 done
 unset IFS
 p_info "Backup run ended taking $(($(date "+%s")-${start_time})) seconds."
