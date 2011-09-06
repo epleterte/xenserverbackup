@@ -7,7 +7,7 @@ with -a for all, -u for uuids or by passing VM names directly.
 Usage: ./xenserverbackup.sh [-a|-b <backup dir>|-c|-C <config file>|-d|-e "<exception list>"|-h|-m "<mount command>"|-u "<uuid> [...<uuid>]"|-w] [<vm-name> [...<vm-name>]]
     -a      Backup all VMs except control domain
     -b      Specify output directory
-    -c      Backup control domain
+    -c      Export compressed backups. Set to either true or false. Defaults to true.
     -C      Specify config file (defaults to ~/.xenserver-backup.cfg)
     -d      Dry run.
     -e      Space separated list of VMs that should not be backed up.
