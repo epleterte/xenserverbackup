@@ -102,17 +102,17 @@ function print_usage {
     cat <<EOF
 Back up Xenserver instances using snapshots. Specify which instances to back up 
 with -a for all, -u for uuids or by passing VM names directly.
-Usage: ${0} [-a|-b <backup dir>|-c|-C <config file>|-d|-e "<exception list>"|-h|-m "<mount command>"|-u "<uuid> [...<uuid>]"|-w] [<vm-name> [...<vm-name>]]
+Usage: ${0} [-a|-b <backup dir>|-c [true|false]|-C <config file>|-d|-e "<exception list>"|-h|-m "<mount command>"|-u "<uuid> [...<uuid>]"|-w] [<vm-name> [...<vm-name>]]
     -a      Backup all VMs.
     -b      Specify output directory
     -c      Export compressed backups. Set to either true or false. Defaults to true.
-    -C      Specify config file (defaults to ~/.xenserver-backup.cfg)
+    -C      Specify config file. Defaults to /etc/xenserver-backup.cfg
     -d      Dry run.
     -e      Space separated list of VMs that should not be backed up.
     -l      Enable/disable logging with 'true' or 'false'.
     -m      Mount command to run previous to running the backup.
     -u      Specify VMs to back up via uuid.
-    -w      Write parameters -a.-b,-e,-m as specified on the command line to 
+    -w      Write parameters -a.-b,-c,-e,-m as specified on the command line to 
             default config file path and exit. 
 
 Examples:
@@ -153,7 +153,7 @@ writeconfig="false"
 # override defaults, then let command line override the config file..
 read_config
 
-while getopts hCab:de:l:L:m:nu:w o
+while getopts hc:Cab:de:l:L:m:nu:w o
 do
     case $o in
         h)
