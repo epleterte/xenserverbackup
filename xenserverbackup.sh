@@ -60,7 +60,7 @@ function backup_vm {
         mkdir -p "${backup_file_path}" || { p_err "Could not create directory ${backup_file_path}!"; exit 1; }
     fi
     # export snapshot.
-    xe vm-export compress=true vm="${snap}" filename="${backup_file_path}/${label}-$( date "+%Y-%m-%d_%H.%M" ).xva" > /dev/null || return 1;
+    xe vm-export compress="${compression}" vm="${snap}" filename="${backup_file_path}/${label}-$( date "+%Y-%m-%d_%H.%M" ).xva" > /dev/null || return 1;
     xe vm-uninstall uuid="${snap}" force=true > /dev/null
 }
 
@@ -70,7 +70,7 @@ function read_config {
     # the sourcing bit works in bash 4, but not in bash 3. darn. let's do something else
     if [ -f "${config_file}" ]; then  
         f=$(mktemp) ; trap "rm ${f} >/dev/null 2>&1" EXIT
-        egrep "^backup_all_vms=|^backup_dir=|^exception_list=|^logfile=|^logging=|^mount_commanda=|^uuids=|^vm_names=" "${config_file}" > ${f}
+        egrep "^backup_all_vms=|^backup_dir=|^compression=|^exception_list=|^logfile=|^logging=|^mount_command=|^uuids=|^vm_names=" "${config_file}" > ${f}
         source ${f} 
         rm ${f} ; unset f
     fi
@@ -105,6 +105,7 @@ with -a for all, -u for uuids or by passing VM names directly.
 Usage: ${0} [-a|-b <backup dir>|-c|-C <config file>|-d|-e "<exception list>"|-h|-m "<mount command>"|-u "<uuid> [...<uuid>]"|-w] [<vm-name> [...<vm-name>]]
     -a      Backup all VMs.
     -b      Specify output directory
+    -c      Export compressed backups. Set to either true or false. Defaults to true.
     -C      Specify config file (defaults to ~/.xenserver-backup.cfg)
     -d      Dry run.
     -e      Space separated list of VMs that should not be backed up.
@@ -139,6 +140,7 @@ fi
 backup_all_vms="false"
 backup_dir=""
 config_file=/etc/xenserver-backup.cfg
+compression="true"
 dry_run="false"
 exception_list=""
 logfile=/var/log/xenserver-backup.log
@@ -166,6 +168,9 @@ do
             ;;
         b)
             backup_dir="${OPTARG}"
+            ;;
+        c)
+            compression="${OPTARG}"
             ;;
         d)
             dry_run="true"
@@ -205,6 +210,7 @@ if [ "${writeconfig}" == "true" ]; then
     cat <<EOF
 backup_all_vms='${backup_all_vms}'
 backup_dir='${backup_dir}'
+compression='${compression}'
 exception_list='${exception_list}'
 logfile='${logfile}'
 logging='${logging}'
@@ -212,7 +218,7 @@ mount_command='${mount_command}'
 uuids='${uuids}'
 vm_names='${@}'
 EOF
-    printf "backup_all_vms='%s'\nbackup_dir='%s'\nexception_list='%s'\nlogfile='%s'\nlogging='%s'\nmount_command='%s'\nuuids='%s'\nvm_names='%s'\n" "${backup_all_vms:-}" "${backup_dir:-}" "${exception_list:-}" "${logfile:-}" "${logging:-}" "${mount_command:-}" "${uuids:-}" "${@:-}" > ${config_file}
+    printf "backup_all_vms='%s'\nbackup_dir='%s'\ncompression='%s'\nexception_list='%s'\nlogfile='%s'\nlogging='%s'\nmount_command='%s'\nuuids='%s'\nvm_names='%s'\n" "${backup_all_vms:-}" "${backup_dir:-}" "${compression:-}" "${exception_list:-}" "${logfile:-}" "${logging:-}" "${mount_command:-}" "${uuids:-}" "${@:-}" > ${config_file}
     exit $?
 fi
 
@@ -226,6 +232,8 @@ which xe >/dev/null 2>&1 || { p_err "xe not in path!"; exit 1; }
     print_usage ; exit; }
 [ "${backup_dir}" == "" ] && { p_err "No backup destination path given."; exit 1; }
 [ ! -d "${backup_dir}"  ] && { p_err "Backup path ${backup_dir} is not a directory"; exit 1; }
+[ "${compression}"  ] && { p_err "Backup path ${backup_dir} is not a directory"; exit 1; }
+[ "${compression}" == "true" -o "${compression}" == "false" ] || { p_err "'compression' set to '${compression}', must be either true or false"; exit 1; }
 
 [ "${logging}" == "true" ] && exec >>${logfile} 2>>${logfile}
 
