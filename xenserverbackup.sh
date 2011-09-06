@@ -232,7 +232,6 @@ which xe >/dev/null 2>&1 || { p_err "xe not in path!"; exit 1; }
     print_usage ; exit; }
 [ "${backup_dir}" == "" ] && { p_err "No backup destination path given."; exit 1; }
 [ ! -d "${backup_dir}"  ] && { p_err "Backup path ${backup_dir} is not a directory"; exit 1; }
-[ "${compression}"  ] && { p_err "Backup path ${backup_dir} is not a directory"; exit 1; }
 [ "${compression}" == "true" -o "${compression}" == "false" ] || { p_err "'compression' set to '${compression}', must be either true or false"; exit 1; }
 
 [ "${logging}" == "true" ] && exec >>${logfile} 2>>${logfile}
