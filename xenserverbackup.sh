@@ -60,7 +60,7 @@ function backup_vm {
         mkdir -p "${backup_file_path}" || { p_err "Could not create directory ${backup_file_path}!"; exit 1; }
     fi
     # export snapshot.
-    xe vm-export vm="${snap}" filename="${backup_file_path}/${label}-$( date "+%Y-%m-%d_%H.%M" ).xva" > /dev/null || return 1;
+    xe vm-export compress=true vm="${snap}" filename="${backup_file_path}/${label}-$( date "+%Y-%m-%d_%H.%M" ).xva" > /dev/null || return 1;
     xe vm-uninstall uuid="${snap}" force=true > /dev/null
 }
 
