@@ -150,6 +150,8 @@ uuids=""
 vm_names=""
 writeconfig="false"
 
+lockfile="/var/lock/$( basename ${0} ).lock"
+
 # override defaults, then let command line override the config file..
 read_config
 
@@ -241,6 +243,17 @@ which xe >/dev/null 2>&1 || { p_err "xe not in path!"; exit 1; }
 [[ "${@:-}" != "" ]] && { vm_names="${@}"; exception_list=""; }
 # # hmm, this will only work if the exception list and the passed vm name match.. fixed above instead resetting exception_list.
 # vm_names=array("${vm_names/${exception_list}/}")
+
+# case: running multiple instances of the script is not a problem queue wise, but slows down the instances that haven't finished. using a lock to disable multiple instances will let them finish at the cost of having unregular backups (scewing more and more over time). this will make it do backups as often as possible (instead of regular) following a 'best effort under these constraints' strategy. the problem is not necessarily backups running for more than 24 hours, but bad performance and/or bad scheduling in xenserver (unconfirmed). 
+
+exec 200>"${lockfile}"
+flock -e -n 200 || { p_err "could not aquire lock, other process still running?"; exit 1 }
+
+#if [ -z "$flock" ] ; then
+#  #lockopts="-w 0 $lockfile"
+#  lockopts="-n $lockfile"
+#  exec env flock=1 flock $lockopts $0 "$@"
+#fi
 
 vm_list=$(vmlist)
 
