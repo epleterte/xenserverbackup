@@ -1,6 +1,6 @@
-== XenServer Backup ==
+== XenServer/XCP Backup ==
 
-XenServer Backup script utilizing snapshots (via exports).
+XenServer / XCP Backup script utilizing snapshots (via exports).
 
 Back up Xenserver instances using snapshots. Specify which instances to back up 
 with -a for all, -u for uuids or by passing VM names directly.
